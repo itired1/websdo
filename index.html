@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учебный портал</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="modal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Главное меню -->
+    <div id="main-menu" class="container fade-in">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>Учебный портал</h1>
+        </div>
+        <div class="menu-options">
+            <button id="login-btn" class="option-btn">Вход</button>
+            <button id="register-btn" class="option-btn">Регистрация</button>
+            <button id="exit-btn" class="option-btn">Выйти</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content scale-in">
+            <span class="close-btn">&times;</span>
+            <h2>Вход в систему</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="login-username" placeholder="Логин" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Пароль" required>
+                </div>
+                <button type="submit" class="btn">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content scale-in">
+            <span class="close-btn">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="register-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="reg-name" placeholder="Имя" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-at"></i>
+                    <input type="text" id="reg-username" placeholder="Логин" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password" placeholder="Пароль" required>
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="user-menu" class="container hidden">
+        <div class="user-header slide-down">
+            <div class="user-info">
+                <img id="user-avatar" src="https://via.placeholder.com/50" alt="Аватар" class="avatar pulse">
+                <h2 id="user-greeting">Добро пожаловать, <span id="username-display"></span>!</h2>
+            </div>
+            <button id="logout-btn" class="btn">Выйти</button>
+        </div>
+        
+        <div class="user-options">
+            <button id="tasks-btn" class="option-btn pulse">
+                <i class="fas fa-tasks"></i> Задания
+            </button>
+            <button id="schedule-btn" class="option-btn pulse">
+                <i class="fas fa-calendar-alt"></i> Расписание
+            </button>
+            <button id="profile-btn" class="option-btn pulse">
+                <i class="fas fa-user-cog"></i> Профиль
+            </button>
+        </div>
+    </div>
+
+    <div id="tasks-section" class="content-section hidden">
+        <h2 class="section-title">Ваши задания</h2>
+        <div id="tasks-list" class="cards-container">
+        </div>
+        <button id="back-to-menu-from-tasks" class="btn back-btn">Назад</button>
+    </div>
+
+    <div id="schedule-section" class="content-section hidden">
+        <h2 class="section-title">Расписание</h2>
+        <div id="schedule-list" class="schedule-container">
+        </div>
+        <button id="back-to-menu-from-schedule" class="btn back-btn">Назад</button>
+    </div>
+
+    <div id="profile-section" class="content-section hidden">
+        <h2 class="section-title">Профиль</h2>
+        <div class="profile-container">
+            <div class="avatar-upload">
+                <img id="profile-avatar" src="https://via.placeholder.com/150" alt="Аватар" class="large-avatar">
+                <label for="avatar-input" class="btn">Изменить аватар</label>
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            </div>
+            <form id="profile-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="profile-name" placeholder="Имя" readonly>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-at"></i>
+                    <input type="text" id="profile-username" placeholder="Логин" readonly>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="profile-password" placeholder="Новый пароль">
+                </div>
+                <button type="submit" class="btn">Сохранить изменения</button>
+            </form>
+        </div>
+        <button id="back-to-menu-from-profile" class="btn back-btn">Назад</button>
+    </div>
+
+<div id="settings-modal" class="modal">
+    <div class="modal-content scale-in">
+        <span class="close-btn">&times;</span>
+        <h2>Настройки сайта</h2>
+        <div class="settings-form">
+            <div class="setting-group">
+                <label for="theme-select">Тема оформления:</label>
+                <select id="theme-select" class="form-control">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Темная</option>
+                    <option value="blue">Синяя</option>
+                    <option value="green">Зеленая</option>
+                    <option value="pink">Розовая</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="background-select">Фон:</label>
+                <select id="background-select" class="form-control">
+                    <option value="default">По умолчанию</option>
+                    <option value="waves">Волны</option>
+                    <option value="abstract">Абстрактный</option>
+                    <option value="nature">Природа</option>
+                    <option value="space">Космос</option>
+                    <option value="image1">Изображение 1</option>
+                    <option value="image2">Изображение 2</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="animations-toggle" checked>
+                    <span class="slider"></span>
+                    <span class="toggle-label">Анимации</span>
+                </label>
+            </div>
+            
+            <button id="save-settings" class="btn">Сохранить настройки</button>
+        </div>
+    </div>
+</div>
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

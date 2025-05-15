@@ -5,171 +5,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Учебный портал</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="animations.css">
-    <link rel="stylesheet" href="modal.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
+<body class="light-theme">
     <!-- Главное меню -->
-    <div id="main-menu" class="container fade-in">
-        <div class="logo">
-            <i class="fas fa-graduation-cap"></i>
-            <h1>Учебный портал</h1>
-        </div>
+    <div id="main-menu" class="container active">
+        <h1>Добро пожаловать!</h1>
         <div class="menu-options">
-            <button id="login-btn" class="option-btn">Вход</button>
-            <button id="register-btn" class="option-btn">Регистрация</button>
-            <button id="exit-btn" class="option-btn">Выйти</button>
+            <button id="login-btn" class="btn">Вход</button>
+            <button id="register-btn" class="btn">Регистрация</button>
+            <button id="exit-btn" class="btn">Выйти</button>
+        </div>
+        <button id="theme-settings-btn" class="settings-btn"><i class="fas fa-cog"></i></button>
+    </div>
+
+    <!-- Меню пользователя -->
+    <div id="user-menu" class="container">
+        <h1 id="welcome-message">Добро пожаловать, пользователь!</h1>
+        <div class="menu-options">
+            <button id="tasks-btn" class="btn">Задания</button>
+            <button id="schedule-btn" class="btn">Расписание</button>
+            <button id="profile-btn" class="btn">Профиль</button>
+            <button id="logout-btn" class="btn">Выйти</button>
         </div>
     </div>
 
+    <!-- Модальное окно входа -->
     <div id="login-modal" class="modal">
-        <div class="modal-content scale-in">
-            <span class="close-btn">&times;</span>
-            <h2>Вход в систему</h2>
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Вход</h2>
             <form id="login-form">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="login-username" placeholder="Логин" required>
+                <div class="form-group">
+                    <label for="login-username">Логин:</label>
+                    <input type="text" id="login-username" required>
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="login-password" placeholder="Пароль" required>
+                <div class="form-group">
+                    <label for="login-password">Пароль:</label>
+                    <input type="password" id="login-password" required>
                 </div>
                 <button type="submit" class="btn">Войти</button>
             </form>
+            <p id="login-error" class="error-message"></p>
         </div>
     </div>
 
+    <!-- Модальное окно регистрации -->
     <div id="register-modal" class="modal">
-        <div class="modal-content scale-in">
-            <span class="close-btn">&times;</span>
+        <div class="modal-content">
+            <span class="close">&times;</span>
             <h2>Регистрация</h2>
             <form id="register-form">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="reg-name" placeholder="Имя" required>
+                <div class="form-group">
+                    <label for="register-name">Имя:</label>
+                    <input type="text" id="register-name" required>
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-at"></i>
-                    <input type="text" id="reg-username" placeholder="Логин" required>
+                <div class="form-group">
+                    <label for="register-username">Логин:</label>
+                    <input type="text" id="register-username" required>
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="reg-password" placeholder="Пароль" required>
+                <div class="form-group">
+                    <label for="register-password">Пароль:</label>
+                    <input type="password" id="register-password" required>
                 </div>
                 <button type="submit" class="btn">Зарегистрироваться</button>
             </form>
+            <p id="register-error" class="error-message"></p>
         </div>
     </div>
 
-    <div id="user-menu" class="container hidden">
-        <div class="user-header slide-down">
-            <div class="user-info">
-                <img id="user-avatar" src="https://via.placeholder.com/50" alt="Аватар" class="avatar pulse">
-                <h2 id="user-greeting">Добро пожаловать, <span id="username-display"></span>!</h2>
+    <!-- Модальное окно заданий -->
+    <div id="tasks-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ваши задания</h2>
+            <div id="tasks-list">
+                <p id="no-tasks-message">Заданий нет</p>
             </div>
-            <button id="logout-btn" class="btn">Выйти</button>
-        </div>
-        
-        <div class="user-options">
-            <button id="tasks-btn" class="option-btn pulse">
-                <i class="fas fa-tasks"></i> Задания
-            </button>
-            <button id="schedule-btn" class="option-btn pulse">
-                <i class="fas fa-calendar-alt"></i> Расписание
-            </button>
-            <button id="profile-btn" class="option-btn pulse">
-                <i class="fas fa-user-cog"></i> Профиль
-            </button>
         </div>
     </div>
 
-    <div id="tasks-section" class="content-section hidden">
-        <h2 class="section-title">Ваши задания</h2>
-        <div id="tasks-list" class="cards-container">
+    <!-- Модальное окно расписания -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ваше расписание</h2>
+            <div id="schedule-list">
+                <!-- Расписание будет добавляться динамически -->
+            </div>
         </div>
-        <button id="back-to-menu-from-tasks" class="btn back-btn">Назад</button>
     </div>
 
-    <div id="schedule-section" class="content-section hidden">
-        <h2 class="section-title">Расписание</h2>
-        <div id="schedule-list" class="schedule-container">
-        </div>
-        <button id="back-to-menu-from-schedule" class="btn back-btn">Назад</button>
-    </div>
-
-    <div id="profile-section" class="content-section hidden">
-        <h2 class="section-title">Профиль</h2>
-        <div class="profile-container">
-            <div class="avatar-upload">
-                <img id="profile-avatar" src="https://via.placeholder.com/150" alt="Аватар" class="large-avatar">
-                <label for="avatar-input" class="btn">Изменить аватар</label>
-                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+    <!-- Модальное окно профиля -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ваш профиль</h2>
+            <div class="avatar-container">
+                <img id="user-avatar" src="https://via.placeholder.com/150" alt="Аватар">
             </div>
             <form id="profile-form">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="profile-name" placeholder="Имя" readonly>
+                <div class="form-group">
+                    <label for="profile-avatar">Загрузить новый аватар:</label>
+                    <input type="file" id="profile-avatar" accept="image/*">
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-at"></i>
-                    <input type="text" id="profile-username" placeholder="Логин" readonly>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="profile-password" placeholder="Новый пароль">
+                <div class="form-group">
+                    <label for="profile-password">Новый пароль:</label>
+                    <input type="password" id="profile-password">
                 </div>
                 <button type="submit" class="btn">Сохранить изменения</button>
             </form>
         </div>
-        <button id="back-to-menu-from-profile" class="btn back-btn">Назад</button>
     </div>
 
-<div id="settings-modal" class="modal">
-    <div class="modal-content scale-in">
-        <span class="close-btn">&times;</span>
-        <h2>Настройки сайта</h2>
-        <div class="settings-form">
-            <div class="setting-group">
-                <label for="theme-select">Тема оформления:</label>
-                <select id="theme-select" class="form-control">
-                    <option value="light">Светлая</option>
-                    <option value="dark">Темная</option>
-                    <option value="blue">Синяя</option>
-                    <option value="green">Зеленая</option>
-                    <option value="pink">Розовая</option>
-                </select>
+    <!-- Модальное окно настроек темы -->
+    <div id="theme-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Настройки темы</h2>
+            <div class="theme-options">
+                <div class="theme-option">
+                    <h3>Цветовая тема</h3>
+                    <select id="theme-selector">
+                        <option value="light">Светлая</option>
+                        <option value="dark">Тёмная</option>
+                        <option value="blue">Синяя</option>
+                        <option value="green">Зелёная</option>
+                    </select>
+                </div>
+                <div class="theme-option">
+                    <h3>Фоновое изображение</h3>
+                    <select id="background-selector">
+                        <option value="none">Нет</option>
+                        <option value="pattern1">Узор 1</option>
+                        <option value="pattern2">Узор 2</option>
+                        <option value="nature">Природа</option>
+                        <option value="custom">Своё изображение</option>
+                    </select>
+                </div>
+                <div class="theme-option" id="custom-bg-container" style="display: none;">
+                    <h3>Ссылка на изображение</h3>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" id="custom-background-url" placeholder="https://example.com/image.jpg" style="flex: 1;">
+                        <button id="test-bg-btn" class="small-btn">Проверить</button>
+                    </div>
+                    <p class="hint">Вставьте прямую ссылку на изображение (JPG, PNG)</p>
+                </div>
+                <div class="theme-option">
+                    <h3>Размер шрифта</h3>
+                    <select id="font-size-selector">
+                        <option value="small">Маленький</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="large">Большой</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="apply-theme-btn" class="btn">Применить</button>
+                    <button id="reset-theme-btn" class="btn">Сбросить</button>
+                </div>
             </div>
-            
-            <div class="setting-group">
-                <label for="background-select">Фон:</label>
-                <select id="background-select" class="form-control">
-                    <option value="default">По умолчанию</option>
-                    <option value="waves">Волны</option>
-                    <option value="abstract">Абстрактный</option>
-                    <option value="nature">Природа</option>
-                    <option value="space">Космос</option>
-                    <option value="image1">Изображение 1</option>
-                    <option value="image2">Изображение 2</option>
-                </select>
-            </div>
-            
-            <div class="setting-group">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="animations-toggle" checked>
-                    <span class="slider"></span>
-                    <span class="toggle-label">Анимации</span>
-                </label>
-            </div>
-            
-            <button id="save-settings" class="btn">Сохранить настройки</button>
         </div>
     </div>
-</div>
-
-    <div id="notification" class="notification hidden"></div>
 
     <script src="script.js"></script>
 </body>

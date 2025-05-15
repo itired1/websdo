@@ -1,499 +1,473 @@
-// База данных пользователей (эмулируем JSON файл)
-let usersDB = JSON.parse(localStorage.getItem('usersDB')) || [
-    {
-        id: 1,
-        name: "Иван Иванов",
-        username: "ivan",
-        password: "12345",
-        avatar: "https://via.placeholder.com/150",
-        settings: {
-            theme: 'light',
-            background: 'default',
-            animations: true
-        },
-        tasks: [
-            {
-                id: 1,
-                title: "Математика",
-                description: "Решить задачи по алгебре",
-                dueDate: "2023-12-15",
-                status: "pending"
-            },
-            {
-                id: 2,
-                title: "Физика",
-                description: "Лабораторная работа №3",
-                dueDate: "2023-12-20",
-                status: "completed"
-            }
-        ],
-        schedule: [
-            {
-                id: 1,
-                date: "2023-12-10",
-                subject: "Математика",
-                time: "09:00"
-            },
-            {
-                id: 2,
-                date: "2023-12-11",
-                subject: "Физика",
-                time: "11:00"
-            }
-        ]
-    }
-];
-
-// Текущий пользователь
-let currentUser = null;
-
-// DOM элементы
-const mainMenu = document.getElementById('main-menu');
-const loginBtn = document.getElementById('login-btn');
-const registerBtn = document.getElementById('register-btn');
-const exitBtn = document.getElementById('exit-btn');
-const userMenu = document.getElementById('user-menu');
-const logoutBtn = document.getElementById('logout-btn');
-const usernameDisplay = document.getElementById('username-display');
-const userGreeting = document.getElementById('user-greeting');
-const userAvatar = document.getElementById('user-avatar');
-const profileAvatar = document.getElementById('profile-avatar');
-
-// Модальные окна
-const loginModal = document.getElementById('login-modal');
-const registerModal = document.getElementById('register-modal');
-const settingsModal = document.getElementById('settings-modal');
-const closeBtns = document.querySelectorAll('.close-btn');
-
-// Формы
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
-const profileForm = document.getElementById('profile-form');
-const avatarInput = document.getElementById('avatar-input');
-
-// Секции контента
-const tasksSection = document.getElementById('tasks-section');
-const scheduleSection = document.getElementById('schedule-section');
-const profileSection = document.getElementById('profile-section');
-const tasksList = document.getElementById('tasks-list');
-const scheduleList = document.getElementById('schedule-list');
-
-// Кнопки меню пользователя
-const tasksBtn = document.getElementById('tasks-btn');
-const scheduleBtn = document.getElementById('schedule-btn');
-const profileBtn = document.getElementById('profile-btn');
-const settingsBtn = document.getElementById('settings-btn');
-
-// Кнопки возврата
-const backToMenuFromTasks = document.getElementById('back-to-menu-from-tasks');
-const backToMenuFromSchedule = document.getElementById('back-to-menu-from-schedule');
-const backToMenuFromProfile = document.getElementById('back-to-menu-from-profile');
-
-// Уведомления
-const notification = document.getElementById('notification');
-
-// Настройки
-const themeSelect = document.getElementById('theme-select');
-const backgroundSelect = document.getElementById('background-select');
-const animationsToggle = document.getElementById('animations-toggle');
-const saveSettingsBtn = document.getElementById('save-settings');
-
-// Темы оформления
-const themes = {
-    light: {
-        '--primary-color': '#4a6fa5',
-        '--secondary-color': '#166088',
-        '--accent-color': '#4fc3f7',
-        '--light-color': '#f8f9fa',
-        '--dark-color': '#343a40',
-        '--bg-color': '#f5f7fa',
-        '--text-color': '#333',
-        '--card-bg': '#fff'
+// Состояние приложения
+const state = {
+    currentUser: null,
+    users: [
+        { id: 1, name: "Админ", username: "admin", password: "admin123", avatar: "https://via.placeholder.com/150" },
+        { id: 2, name: "qwe", username: "qwe", password: "qwe123", avatar: "https://via.placeholder.com/150" },
+        { id: 3, name: "i", username: "i", password: "i123", avatar: "https://via.placeholder.com/150" },
+        { id: 4, name: "you", username: "you", password: "you123", avatar: "https://via.placeholder.com/150" }
+    ],
+    tasks: [
+        { id: 1, userId: 1, title: "Математика", description: "Решить задачи по алгебре", dueDate: "2024-12-15", status: "pending" },
+        { id: 2, userId: 2, title: "Программирование", description: "Написать код на JavaScript", dueDate: "2025-12-20", status: "completed" },
+        { id: 3, userId: 3, title: "Программирование", description: "Написать код на JavaScript", dueDate: "2025-12-20", status: "completed" },
+        { id: 4, userId: 4, title: "Программирование", description: "Написать код на JavaScript", dueDate: "2025-12-20", status: "completed" },
+        { id: 5, userId: 4, title: "Программирование", description: "Написать код на JavaScript", dueDate: "2025-12-20", status: "completed" }
+    ],
+    schedule: [
+        { id: 1, userId: 1, date: "2023-12-10", subject: "Математика", time: "09:00" },
+        { id: 2, userId: 2, date: "2023-12-11", subject: "Программирование", time: "11:00" },
+        { id: 3, userId: 2, date: "2023-12-10", subject: "Математика", time: "10:00" },
+        { id: 4, userId: 3, date: "2023-12-11", subject: "Программирование", time: "15:00" },
+        { id: 5, userId: 3, date: "2023-12-10", subject: "Математика", time: "14:00" },
+        { id: 6, userId: 4, date: "2023-12-11", subject: "Программирование", time: "18:00" },
+        { id: 7, userId: 4, date: "2023-12-10", subject: "Математика", time: "19:00" },
+        { id: 8, userId: 1, date: "2023-12-11", subject: "Программирование", time: "04:00" },
+        { id: 9, userId: 2, date: "2023-12-10", subject: "Математика", time: "22:00" },
+        { id: 10, userId: 1, date: "2023-12-11", subject: "Программирование", time: "11:00" }
+    ],
+    themeSettings: {
+        theme: "light",
+        background: "none",
+        fontSize: "medium"
     },
-    dark: {
-        '--primary-color': '#6c757d',
-        '--secondary-color': '#495057',
-        '--accent-color': '#4fc3f7',
-        '--light-color': '#343a40',
-        '--dark-color': '#f8f9fa',
-        '--bg-color': '#212529',
-        '--text-color': '#f8f9fa',
-        '--card-bg': '#2c3034'
-    },
-    blue: {
-        '--primary-color': '#1e88e5',
-        '--secondary-color': '#1565c0',
-        '--accent-color': '#64b5f6',
-        '--light-color': '#bbdefb',
-        '--dark-color': '#0d47a1',
-        '--bg-color': '#e3f2fd',
-        '--text-color': '#0a2e5a',
-        '--card-bg': '#ffffff'
-    },
-    green: {
-        '--primary-color': '#43a047',
-        '--secondary-color': '#2e7d32',
-        '--accent-color': '#81c784',
-        '--light-color': '#c8e6c9',
-        '--dark-color': '#1b5e20',
-        '--bg-color': '#e8f5e9',
-        '--text-color': '#1b5e20',
-        '--card-bg': '#ffffff'
-    },
-    pink: {
-        '--primary-color': '#d81b60',
-        '--secondary-color': '#ad1457',
-        '--accent-color': '#f06292',
-        '--light-color': '#f8bbd0',
-        '--dark-color': '#880e4f',
-        '--bg-color': '#fce4ec',
-        '--text-color': '#880e4f',
-        '--card-bg': '#ffffff'
-    }
+    customBackgroundUrl: null
 };
 
-// Фоны
-const backgrounds = {
-    default: 'linear-gradient(135deg, var(--bg-color) 0%, var(--light-color) 100%)',
-    waves: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-    abstract: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
-    nature: 'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)',
-    space: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
-    image1: 'url("https://source.unsplash.com/random/1600x900/?nature")',
-    image2: 'url("https://source.unsplash.com/random/1600x900/?university")'
-};
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    // Проверяем, есть ли сохраненный пользователь в localStorage
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        showUserMenu();
+// Функция для показа уведомлений
+function showNotification(message, type = 'info', duration = 3000) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    let icon;
+    switch(type) {
+        case 'success':
+            icon = '<i class="fas fa-check-circle"></i>';
+            break;
+        case 'error':
+            icon = '<i class="fas fa-exclamation-circle"></i>';
+            break;
+        case 'warning':
+            icon = '<i class="fas fa-exclamation-triangle"></i>';
+            break;
+        default:
+            icon = '<i class="fas fa-info-circle"></i>';
     }
     
-    // Загрузка данных из "файла" users.json
-    saveUsersToStorage();
+    notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+        <span class="notification-close">&times;</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Показываем уведомление
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Обработчик закрытия
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    });
+    
+    // Автоматическое закрытие
+    if (duration > 0) {
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, duration);
+    }
+}
+
+// Загрузка сохраненных настроек темы
+function loadThemeSettings() {
+    const savedSettings = localStorage.getItem('themeSettings');
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        state.themeSettings = settings;
+        state.customBackgroundUrl = settings.customBackgroundUrl || null;
+        applyThemeSettings();
+    }
+}
+
+// Сохранение настроек темы
+function saveThemeSettings() {
+    const settingsToSave = {
+        ...state.themeSettings,
+        customBackgroundUrl: state.customBackgroundUrl
+    };
+    localStorage.setItem('themeSettings', JSON.stringify(settingsToSave));
+}
+
+// Применение настроек темы
+function applyThemeSettings() {
+    const { theme, background, fontSize } = state.themeSettings;
+    
+    // Удаляем все классы тем
+    document.body.classList.remove('light-theme', 'dark-theme', 'blue-theme', 'green-theme');
+    // Добавляем текущую тему
+    document.body.classList.add(`${theme}-theme`);
+    
+    // Удаляем все классы фона
+    document.body.classList.remove('pattern1', 'pattern2', 'nature', 'custom-bg');
+    // Добавляем текущий фон, если он не 'none'
+    if (background !== 'none') {
+        document.body.classList.add(background);
+    }
+    
+    // Применяем кастомный фон, если есть
+    if (state.customBackgroundUrl && background === 'custom') {
+        document.body.classList.add('custom-bg');
+        document.body.style.setProperty('--custom-bg-image', `url('${state.customBackgroundUrl}')`);
+    } else {
+        document.body.style.removeProperty('--custom-bg-image');
+    }
+    
+    // Удаляем все классы размера шрифта
+    document.body.classList.remove('small-font', 'medium-font', 'large-font');
+    // Добавляем текущий размер шрифта
+    document.body.classList.add(`${fontSize}-font`);
+    
+    // Обновляем селекторы в модальном окне
+    document.getElementById('theme-selector').value = theme;
+    document.getElementById('background-selector').value = background;
+    document.getElementById('font-size-selector').value = fontSize;
+    
+    // Показываем/скрываем поле для кастомного фона
+    const customBgContainer = document.getElementById('custom-bg-container');
+    if (background === 'custom') {
+        customBgContainer.style.display = 'block';
+        document.getElementById('custom-background-url').value = state.customBackgroundUrl || '';
+    } else {
+        customBgContainer.style.display = 'none';
+    }
+}
+
+// Инициализация приложения
+document.addEventListener('DOMContentLoaded', function() {
+    loadThemeSettings();
+    setupEventListeners();
+    showMainMenu();
 });
 
-// Функции для работы с "базой данных"
-function saveUsersToStorage() {
-    localStorage.setItem('usersDB', JSON.stringify(usersDB));
-}
-
-function findUserByUsername(username) {
-    return usersDB.find(user => user.username === username);
-}
-
-function findUserByCredentials(username, password) {
-    return usersDB.find(user => user.username === username && user.password === password);
-}
-
-function createUser(name, username, password) {
-    return {
-        id: Date.now(),
-        name,
-        username,
-        password,
-        avatar: "https://via.placeholder.com/150",
-        settings: {
-            theme: 'light',
-            background: 'default',
-            animations: true
-        },
-        tasks: [],
-        schedule: []
-    };
-}
-
-function addUser(user) {
-    usersDB.push(user);
-    saveUsersToStorage();
-}
-
-function updateUser(updatedUser) {
-    const index = usersDB.findIndex(user => user.id === updatedUser.id);
-    if (index !== -1) {
-        usersDB[index] = updatedUser;
-        saveUsersToStorage();
-    }
-}
-
-// Функции отображения интерфейса
-function showMainMenu() {
-    mainMenu.classList.remove('hidden');
-    userMenu.classList.add('hidden');
-    hideAllSections();
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    applyTheme('light');
-    applyBackground('default');
-    toggleAnimations(true);
-}
-
-function showUserMenu() {
-    mainMenu.classList.add('hidden');
-    userMenu.classList.remove('hidden');
-    usernameDisplay.textContent = currentUser.name;
-    userAvatar.src = currentUser.avatar;
-    profileAvatar.src = currentUser.avatar;
-    applyUserSettings(currentUser);
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-}
-
-function hideAllSections() {
-    tasksSection.classList.add('hidden');
-    scheduleSection.classList.add('hidden');
-    profileSection.classList.add('hidden');
-}
-
-function showNotification(message, type = 'success') {
-    notification.textContent = message;
-    notification.className = 'notification';
-    notification.classList.add(type, 'show');
+// Настройка обработчиков событий
+function setupEventListeners() {
+    // Главное меню
+    document.getElementById('login-btn').addEventListener('click', showLoginModal);
+    document.getElementById('register-btn').addEventListener('click', showRegisterModal);
+    document.getElementById('exit-btn').addEventListener('click', exitApp);
     
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
+    // Меню пользователя
+    document.getElementById('tasks-btn').addEventListener('click', showTasksModal);
+    document.getElementById('schedule-btn').addEventListener('click', showScheduleModal);
+    document.getElementById('profile-btn').addEventListener('click', showProfileModal);
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    
+    // Формы
+    document.getElementById('login-form').addEventListener('submit', handleLogin);
+    document.getElementById('register-form').addEventListener('submit', handleRegister);
+    document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+    
+    // Модальные окна
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', closeModal);
+    });
+    
+    // Настройки темы
+    document.getElementById('theme-settings-btn').addEventListener('click', showThemeSettingsModal);
+    document.getElementById('apply-theme-btn').addEventListener('click', applyNewThemeSettings);
+    document.getElementById('reset-theme-btn').addEventListener('click', resetThemeSettings);
+    document.getElementById('background-selector').addEventListener('change', function() {
+        const customBgContainer = document.getElementById('custom-bg-container');
+        if (this.value === 'custom') {
+            customBgContainer.style.display = 'block';
+        } else {
+            customBgContainer.style.display = 'none';
+        }
+    });
+    document.getElementById('test-bg-btn').addEventListener('click', testCustomBackground);
+    
+    // Закрытие модальных окон при клике вне их
+    window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal();
+        }
+    });
 }
 
-// Функции для работы с темами и настройками
-function applyTheme(themeName) {
-    const theme = themes[themeName];
-    for (const [key, value] of Object.entries(theme)) {
-        document.documentElement.style.setProperty(key, value);
+// Проверка кастомного фона
+function testCustomBackground() {
+    const url = document.getElementById('custom-background-url').value.trim();
+    
+    if (!url) {
+        showNotification('Введите URL изображения', 'error');
+        return;
     }
+    
+    showNotification('Проверяем изображение...', 'info', 0);
+    
+    const img = new Image();
+    img.onload = function() {
+        showNotification('Изображение загружено успешно!', 'success');
+        // Применяем временно для предпросмотра
+        document.body.classList.add('custom-bg');
+        document.body.style.setProperty('--custom-bg-image', `url('${url}')`);
+    };
+    img.onerror = function() {
+        showNotification('Не удалось загрузить изображение', 'error');
+    };
+    img.src = url;
 }
 
-function applyBackground(backgroundName) {
-    document.body.style.backgroundImage = backgrounds[backgroundName];
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundAttachment = 'fixed';
-    document.body.style.backgroundRepeat = 'no-repeat';
+// Показать главное меню
+function showMainMenu() {
+    document.getElementById('main-menu').classList.add('active');
+    document.getElementById('user-menu').classList.remove('active');
+    state.currentUser = null;
 }
 
-function toggleAnimations(enabled) {
-    if (enabled) {
-        document.body.classList.add('animations-enabled');
-    } else {
-        document.body.classList.remove('animations-enabled');
-    }
+// Показать меню пользователя
+function showUserMenu() {
+    document.getElementById('main-menu').classList.remove('active');
+    document.getElementById('user-menu').classList.add('active');
+    document.getElementById('welcome-message').textContent = `Добро пожаловать, ${state.currentUser.name}!`;
 }
 
-function applyUserSettings(user) {
-    if (user && user.settings) {
-        applyTheme(user.settings.theme);
-        applyBackground(user.settings.background);
-        toggleAnimations(user.settings.animations);
-    }
+// Показать модальное окно входа
+function showLoginModal() {
+    document.getElementById('login-modal').style.display = 'block';
+    document.getElementById('login-username').focus();
 }
 
-// Функции рендеринга данных
-function renderTasks() {
+// Показать модальное окно регистрации
+function showRegisterModal() {
+    document.getElementById('register-modal').style.display = 'block';
+    document.getElementById('register-name').focus();
+}
+
+// Показать модальное окно заданий
+function showTasksModal() {
+    const tasksList = document.getElementById('tasks-list');
     tasksList.innerHTML = '';
     
-    if (currentUser.tasks.length === 0) {
-        tasksList.innerHTML = '<p class="no-tasks">Заданий нет</p>';
-        return;
+    const userTasks = state.tasks.filter(task => task.userId === state.currentUser.id);
+    
+    if (userTasks.length === 0) {
+        tasksList.innerHTML = '<p id="no-tasks-message">Заданий нет</p>';
+    } else {
+        userTasks.forEach(task => {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task-item';
+            taskElement.innerHTML = `
+                <div class="task-title">${task.title}</div>
+                <div class="task-description">${task.description}</div>
+                <div class="task-due-date">Дата сдачи: ${task.dueDate}</div>
+                <div class="task-status status-${task.status}">${task.status === 'pending' ? 'В процессе' : 'Завершено'}</div>
+            `;
+            tasksList.appendChild(taskElement);
+        });
     }
     
-    currentUser.tasks.forEach((task, index) => {
-        const taskElement = document.createElement('div');
-        taskElement.className = 'task-card';
-        taskElement.style.animationDelay = `${index * 0.1}s`;
-        taskElement.innerHTML = `
-            <h3 class="task-title">${task.title}</h3>
-            <p class="task-description">${task.description}</p>
-            <p class="task-due">Срок: ${task.dueDate}</p>
-            <span class="task-status ${task.status === 'completed' ? 'status-completed' : 'status-pending'}">
-                ${task.status === 'completed' ? 'Выполнено' : 'В процессе'}
-            </span>
-        `;
-        tasksList.appendChild(taskElement);
-    });
+    document.getElementById('tasks-modal').style.display = 'block';
 }
 
-function renderSchedule() {
+// Показать модальное окно расписания
+function showScheduleModal() {
+    const scheduleList = document.getElementById('schedule-list');
     scheduleList.innerHTML = '';
     
-    if (currentUser.schedule.length === 0) {
-        scheduleList.innerHTML = '<p class="no-schedule">Расписание отсутствует</p>';
-        return;
+    const userSchedule = state.schedule.filter(item => item.userId === state.currentUser.id);
+    
+    if (userSchedule.length === 0) {
+        scheduleList.innerHTML = '<p>Расписание пусто</p>';
+    } else {
+        userSchedule.forEach(item => {
+            const scheduleElement = document.createElement('div');
+            scheduleElement.className = 'schedule-item';
+            scheduleElement.innerHTML = `
+                <div><strong>${item.date}</strong> - ${item.subject}</div>
+                <div>Время: ${item.time}</div>
+            `;
+            scheduleList.appendChild(scheduleElement);
+        });
     }
     
-    currentUser.schedule.forEach((item, index) => {
-        const scheduleItem = document.createElement('div');
-        scheduleItem.className = 'schedule-item';
-        scheduleItem.style.animationDelay = `${index * 0.1}s`;
-        scheduleItem.innerHTML = `
-            <span class="schedule-date">${item.date} ${item.time}</span>
-            <span class="schedule-subject">${item.subject}</span>
-        `;
-        scheduleList.appendChild(scheduleItem);
-    });
+    document.getElementById('schedule-modal').style.display = 'block';
 }
 
-// Обработчики модальных окон
-loginBtn.addEventListener('click', () => {
-    loginModal.classList.add('show');
-});
+// Показать модальное окно профиля
+function showProfileModal() {
+    document.getElementById('user-avatar').src = state.currentUser.avatar;
+    document.getElementById('profile-modal').style.display = 'block';
+}
 
-registerBtn.addEventListener('click', () => {
-    registerModal.classList.add('show');
-});
+// Показать модальное окно настроек темы
+function showThemeSettingsModal() {
+    document.getElementById('theme-settings-modal').style.display = 'block';
+}
 
-settingsBtn.addEventListener('click', () => {
-    if (currentUser) {
-        themeSelect.value = currentUser.settings.theme;
-        backgroundSelect.value = currentUser.settings.background;
-        animationsToggle.checked = currentUser.settings.animations;
-        settingsModal.classList.add('show');
-    }
-});
-
-closeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        loginModal.classList.remove('show');
-        registerModal.classList.remove('show');
-        settingsModal.classList.remove('show');
+// Закрыть модальное окно
+function closeModal() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
     });
-});
+    // Восстанавливаем текущий фон после предпросмотра
+    applyThemeSettings();
+}
 
-window.addEventListener('click', (e) => {
-    if (e.target === loginModal) {
-        loginModal.classList.remove('show');
-    }
-    if (e.target === registerModal) {
-        registerModal.classList.remove('show');
-    }
-    if (e.target === settingsModal) {
-        settingsModal.classList.remove('show');
-    }
-});
-
-// Обработчики форм
-loginForm.addEventListener('submit', (e) => {
+// Обработка входа
+function handleLogin(e) {
     e.preventDefault();
+    
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
     
-    const user = findUserByCredentials(username, password);
+    const user = state.users.find(u => u.username === username && u.password === password);
+    
     if (user) {
-        currentUser = user;
+        state.currentUser = user;
+        closeModal();
         showUserMenu();
-        loginModal.classList.remove('show');
-        loginForm.reset();
-        showNotification('Вход выполнен успешно!');
+        document.getElementById('login-error').textContent = '';
+        document.getElementById('login-form').reset();
+        showNotification(`Добро пожаловать, ${user.name}!`, 'success');
     } else {
+        document.getElementById('login-error').textContent = 'Неверный логин или пароль.';
         showNotification('Неверный логин или пароль', 'error');
     }
-});
+}
 
-registerForm.addEventListener('submit', (e) => {
+// Обработка регистрации
+function handleRegister(e) {
     e.preventDefault();
-    const name = document.getElementById('reg-name').value;
-    const username = document.getElementById('reg-username').value;
-    const password = document.getElementById('reg-password').value;
     
-    if (findUserByUsername(username)) {
+    const name = document.getElementById('register-name').value;
+    const username = document.getElementById('register-username').value;
+    const password = document.getElementById('register-password').value;
+    
+    const userExists = state.users.some(u => u.username === username);
+    
+    if (userExists) {
+        document.getElementById('register-error').textContent = 'Логин уже занят.';
         showNotification('Логин уже занят', 'error');
     } else {
-        const newUser = createUser(name, username, password);
-        addUser(newUser);
-        currentUser = newUser;
+        const newUser = {
+            id: state.users.length + 1,
+            name,
+            username,
+            password,
+            avatar: 'https://via.placeholder.com/150'
+        };
+        
+        state.users.push(newUser);
+        state.currentUser = newUser;
+        
+        closeModal();
         showUserMenu();
-        registerModal.classList.remove('show');
-        registerForm.reset();
-        showNotification('Регистрация прошла успешно!');
+        document.getElementById('register-error').textContent = '';
+        document.getElementById('register-form').reset();
+        showNotification('Регистрация прошла успешно!', 'success');
     }
-});
+}
 
-profileForm.addEventListener('submit', (e) => {
+// Обработка обновления профиля
+function handleProfileUpdate(e) {
     e.preventDefault();
+    
     const newPassword = document.getElementById('profile-password').value;
+    const avatarFile = document.getElementById('profile-avatar').files[0];
     
     if (newPassword) {
-        currentUser.password = newPassword;
-        updateUser(currentUser);
-        showNotification('Пароль успешно изменен!');
-        profileForm.reset();
+        state.currentUser.password = newPassword;
     }
-});
-
-avatarInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
+    
+    if (avatarFile) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            currentUser.avatar = event.target.result;
-            userAvatar.src = currentUser.avatar;
-            profileAvatar.src = currentUser.avatar;
-            updateUser(currentUser);
-            showNotification('Аватар успешно обновлен!');
+        reader.onload = function(e) {
+            state.currentUser.avatar = e.target.result;
+            document.getElementById('user-avatar').src = e.target.result;
+            showNotification('Аватар успешно обновлён!', 'success');
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(avatarFile);
     }
-});
-
-// Сохранение настроек
-saveSettingsBtn.addEventListener('click', () => {
-    if (currentUser) {
-        currentUser.settings.theme = themeSelect.value;
-        currentUser.settings.background = backgroundSelect.value;
-        currentUser.settings.animations = animationsToggle.checked;
-        
-        updateUser(currentUser);
-        applyTheme(currentUser.settings.theme);
-        applyBackground(currentUser.settings.background);
-        toggleAnimations(currentUser.settings.animations);
-        
-        settingsModal.classList.remove('show');
-        showNotification('Настройки сохранены');
+    
+    if (newPassword) {
+        showNotification('Пароль успешно изменён!', 'success');
     }
-});
+    
+    document.getElementById('profile-form').reset();
+}
 
-// Обработчики кнопок меню пользователя
-tasksBtn.addEventListener('click', () => {
-    hideAllSections();
-    tasksSection.classList.remove('hidden');
-    renderTasks();
-});
-
-scheduleBtn.addEventListener('click', () => {
-    hideAllSections();
-    scheduleSection.classList.remove('hidden');
-    renderSchedule();
-});
-
-profileBtn.addEventListener('click', () => {
-    hideAllSections();
-    profileSection.classList.remove('hidden');
-    document.getElementById('profile-name').value = currentUser.name;
-    document.getElementById('profile-username').value = currentUser.username;
-    document.getElementById('profile-password').value = '';
-});
-
-logoutBtn.addEventListener('click', () => {
+// Выход из системы
+function logout() {
+    state.currentUser = null;
     showMainMenu();
-    showNotification('Вы успешно вышли из системы');
-});
+    showNotification('Вы успешно вышли из системы', 'info');
+}
 
-exitBtn.addEventListener('click', () => {
-    showNotification('До свидания!', 'warning');
-    setTimeout(() => {
-        window.close();
-    }, 1000);
-});
+// Выход из приложения
+function exitApp() {
+    if (confirm('Вы уверены, что хотите выйти?')) {
+        showNotification('До свидания!', 'info', 1000);
+        setTimeout(() => {
+            window.close();
+        }, 1500);
+    }
+}
 
-// Обработчики кнопок возврата
-backToMenuFromTasks.addEventListener('click', () => {
-    hideAllSections();
-});
+// Применение новых настроек темы
+function applyNewThemeSettings() {
+    const background = document.getElementById('background-selector').value;
+    
+    state.themeSettings = {
+        theme: document.getElementById('theme-selector').value,
+        background: background,
+        fontSize: document.getElementById('font-size-selector').value
+    };
+    
+    if (background === 'custom') {
+        const url = document.getElementById('custom-background-url').value.trim();
+        if (url) {
+            state.customBackgroundUrl = url;
+        } else {
+            state.customBackgroundUrl = null;
+            showNotification('Введите URL для фона', 'warning');
+        }
+    } else {
+        state.customBackgroundUrl = null;
+    }
+    
+    applyThemeSettings();
+    saveThemeSettings();
+    showNotification('Настройки темы применены!', 'success');
+    closeModal();
+}
 
-backToMenuFromSchedule.addEventListener('click', () => {
-    hideAllSections();
-});
+// Сброс настроек темы
+function resetThemeSettings() {
+    state.themeSettings = {
+        theme: "light",
+        background: "none",
+        fontSize: "medium"
+    };
+    state.customBackgroundUrl = null;
+    applyThemeSettings();
+    saveThemeSettings();
+    showNotification('Настройки темы сброшены', 'info');
+}
 
-backToMenuFromProfile.addEventListener('click', () => {
-    hideAllSections();
-});
+// Поиск пользователя
+function findUser(username, password = null) {
+    if (password) {
+        return state.users.find(u => u.username === username && u.password === password);
+    } else {
+        return state.users.find(u => u.username === username);
+    }
+}
